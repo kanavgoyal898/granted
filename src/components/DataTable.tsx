@@ -8,7 +8,7 @@ export type Column<T> = {
   key: keyof T
   label: string
   sortable?: boolean
-  format?: (val: any, row: T) => React.ReactNode
+  format?: (val: T[keyof T], row: T) => React.ReactNode
   className?: string
 }
 
@@ -31,9 +31,10 @@ type DataTableProps<T> = {
   rowsPerPage?: number
   performPagination?: boolean
   showResultCount?: boolean
+  truncateLength?: number
 }
 
-export function DataTable<T extends Record<string, any>>({
+export function DataTable<T extends Record<string, unknown>>({
   data,
   columns,
   filters = [],
@@ -43,6 +44,7 @@ export function DataTable<T extends Record<string, any>>({
   rowsPerPage = 10,
   performPagination = true,
   showResultCount = true,
+  truncateLength = 36,
 }: DataTableProps<T>) {
   const [filterValues, setFilterValues] = useState<Record<string, string>>(
     Object.fromEntries(filters.map(f => [f.key, ""]))
@@ -54,6 +56,12 @@ export function DataTable<T extends Record<string, any>>({
   })
 
   const [currentPage, setCurrentPage] = useState(1)
+
+  const truncate = (val: unknown): React.ReactNode => {
+    if (typeof val !== "string") return val as React.ReactNode
+    if (!truncateLength || val.length <= truncateLength) return val
+    return val.slice(0, truncateLength) + "…"
+  }
 
   const updateFilter = (key: string, value: string) => {
     setFilterValues(prev => {
@@ -81,8 +89,8 @@ export function DataTable<T extends Record<string, any>>({
         if (f.filterFn) return f.filterFn(row, fv)
         const val = row[f.key as keyof T]
         if (f.type === "text") return String(val).toLowerCase().includes(fv.toLowerCase())
-        if (f.type === "number") return val >= +fv
-        if (f.type === "date") return new Date(val) >= new Date(fv)
+        if (f.type === "number") return (val as number) >= +fv
+        if (f.type === "date") return new Date(val as string | Date) >= new Date(fv)
         if (f.type === "select") return val === fv
         return true
       })
@@ -91,8 +99,10 @@ export function DataTable<T extends Record<string, any>>({
     if (!sortConfig.key) return filtered
 
     return filtered.sort((a, b) => {
-      const aVal = a[sortConfig.key]
-      const bVal = b[sortConfig.key]
+      const key = sortConfig.key!
+      const aVal = a[key]
+      const bVal = b[key]
+
       if (aVal instanceof Date && bVal instanceof Date)
         return sortConfig.direction === "asc" ? aVal.getTime() - bVal.getTime() : bVal.getTime() - aVal.getTime()
       if (typeof aVal === "number" && typeof bVal === "number")
@@ -103,8 +113,8 @@ export function DataTable<T extends Record<string, any>>({
     })
   }, [data, filterValues, sortConfig, filters])
 
-  // Pagination
   const totalPages = performPagination ? Math.ceil(processed.length / rowsPerPage) : 1
+
   const paginatedData = useMemo(() => {
     if (!performPagination) return processed
     const start = (currentPage - 1) * rowsPerPage
@@ -115,7 +125,7 @@ export function DataTable<T extends Record<string, any>>({
   const isRangeFilter = (key: string) => key.endsWith("Min") || key.endsWith("Max") || key === "dateFrom" || key === "dateTo"
 
   return (
-    <div className="w-full py-4">
+    <div className="w-full px-2 py-4">
       {title && <h2 className="text-2xl font-semibold mb-4">{title}</h2>}
 
       {filters.length > 0 && (
@@ -148,7 +158,9 @@ export function DataTable<T extends Record<string, any>>({
                     <SelectContent>
                       <SelectItem value="all">All</SelectItem>
                       {(dynamicSelectOptions[f.key]?.(filterValues) || f.options || []).map(opt => (
-                        <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                        <SelectItem key={opt} value={opt} title={opt}>
+                          {truncate(opt)}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -205,8 +217,12 @@ export function DataTable<T extends Record<string, any>>({
               <TableRow key={i}>
                 <TableCell>{(currentPage - 1) * rowsPerPage + i + 1}</TableCell>
                 {columns.map(col => (
-                  <TableCell key={col.key as string} className={col.className}>
-                    {col.format ? col.format(row[col.key], row) : row[col.key]}
+                  <TableCell
+                    key={col.key as string}
+                    className={col.className}
+                    title={String(row[col.key] ?? "")}
+                  >
+                    {col.format ? col.format(row[col.key], row) : truncate(row[col.key])}
                   </TableCell>
                 ))}
               </TableRow>

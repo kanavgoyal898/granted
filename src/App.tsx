@@ -45,21 +45,59 @@ const receipts = generateReceipts(100)
 const expenditures = generateExpenditures(150)
 
 const receiptColumns: Column<Receipt>[] = [
-  { key: "date", label: "Date", sortable: true, format: d => d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) },
+  {
+    key: "date",
+    label: "Date",
+    sortable: true,
+    format: d => d instanceof Date
+      ? d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
+      : String(d)
+  },
   { key: "sanctionOrder", label: "Sanction Order", sortable: true },
   { key: "category", label: "Category", sortable: true },
-  { key: "amount", label: "Amount", sortable: true, className: "text-right", format: a => formatINR(a) },
-  { key: "attachment", label: "Attachment", format: url => url ? <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View</a> : "-" }
+  {
+    key: "amount",
+    label: "Amount",
+    sortable: true,
+    className: "text-right",
+    format: a => typeof a === "number" ? formatINR(a) : "-"
+  },
+  {
+    key: "attachment",
+    label: "Attachment",
+    format: url => url
+      ? <a href={String(url)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View</a>
+      : "-"
+  }
 ]
 
 const expenditureColumns: Column<Expenditure>[] = [
-  { key: "date", label: "Date", sortable: true, format: d => d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) },
+  {
+    key: "date",
+    label: "Date",
+    sortable: true,
+    format: d => d instanceof Date
+      ? d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
+      : String(d)
+  },
   { key: "paymentOrder", label: "Payment Order", sortable: true },
   { key: "category", label: "Category", sortable: true },
   { key: "subCategory", label: "Sub-category", sortable: true },
   { key: "department", label: "Department", sortable: true },
-  { key: "amount", label: "Amount", sortable: true, className: "text-right", format: a => formatINR(a) },
-  { key: "attachment", label: "Attachment", format: url => url ? <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View</a> : "-" }
+  {
+    key: "amount",
+    label: "Amount",
+    sortable: true,
+    className: "text-right",
+    format: a => typeof a === "number" ? formatINR(a) : "-"
+  },
+  {
+    key: "attachment",
+    label: "Attachment",
+    format: url => url
+      ? <a href={String(url)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View</a>
+      : "-"
+  }
 ]
 
 type CategorySummary = {
@@ -79,9 +117,9 @@ const generateCategorySummary = (): CategorySummary[] => {
 
 const categorySummaryColumns: Column<CategorySummary>[] = [
   { key: "category", label: "Category" },
-  { key: "totalReceipts", label: "Total Receipts", className: "text-right", format: val => formatINR(val) },
-  { key: "totalExpenditure", label: "Total Expenditures", className: "text-right", format: val => formatINR(val) },
-  { key: "balance", label: "Balance", className: "text-right", format: val => formatINR(val) }
+  { key: "totalReceipts", label: "Total Receipts", className: "text-right", format: val => formatINR(Number(val)) },
+  { key: "totalExpenditure", label: "Total Expenditures", className: "text-right", format: val => formatINR(Number(val)) },
+  { key: "balance", label: "Balance", className: "text-right", format: val => formatINR(Number(val)) }
 ]
 
 const allSubCategories = Object.values(subCategoriesMap).flat()
@@ -89,8 +127,8 @@ const allSubCategories = Object.values(subCategoriesMap).flat()
 const receiptFilters: Filter<Receipt>[] = [
   { key: "sanctionOrder", type: "text", label: "Sanction Order", placeholder: "Search Sanction Order" },
   { key: "category", type: "select", label: "Category", options: categories },
-  { key: "amountMin", type: "number", label: "Min Amount", placeholder: "Min ₹", filterFn: (row, val) => row.amount >= +val },
-  { key: "amountMax", type: "number", label: "Max Amount", placeholder: "Max ₹", filterFn: (row, val) => row.amount <= +val },
+  { key: "amountMin", type: "number", label: "Min Amount", placeholder: "Min ₹", filterFn: (row, val) => row.amount >= Number(val) },
+  { key: "amountMax", type: "number", label: "Max Amount", placeholder: "Max ₹", filterFn: (row, val) => row.amount <= Number(val) },
   { key: "dateFrom", type: "date", label: "From Date", filterFn: (row, val) => row.date >= new Date(val) },
   { key: "dateTo", type: "date", label: "To Date", filterFn: (row, val) => row.date <= new Date(val) }
 ]
@@ -100,8 +138,8 @@ const expenditureFilters: Filter<Expenditure>[] = [
   { key: "category", type: "select", label: "Category", options: categories },
   { key: "subCategory", type: "select", label: "Sub-category" },
   { key: "department", type: "select", label: "Department", options: departments },
-  { key: "expenditureMin", type: "number", label: "Min Expenditure", placeholder: "Min ₹", filterFn: (row, val) => row.amount >= +val },
-  { key: "expenditureMax", type: "number", label: "Max Expenditure", placeholder: "Max ₹", filterFn: (row, val) => row.amount <= +val },
+  { key: "expenditureMin", type: "number", label: "Min Expenditure", placeholder: "Min ₹", filterFn: (row, val) => row.amount >= Number(val) },
+  { key: "expenditureMax", type: "number", label: "Max Expenditure", placeholder: "Max ₹", filterFn: (row, val) => row.amount <= Number(val) },
   { key: "dateFrom", type: "date", label: "From Date", filterFn: (row, val) => row.date >= new Date(val) },
   { key: "dateTo", type: "date", label: "To Date", filterFn: (row, val) => row.date <= new Date(val) }
 ]
