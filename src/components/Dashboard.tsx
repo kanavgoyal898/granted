@@ -1118,9 +1118,10 @@ export function Dashboard() {
       if (expandedRows.size === 0) {
         const expVal = Math.min(Math.max(0, row.totalExpenditure), totalReceipts || row.totalExpenditure)
         const balVal = Math.max(0, totalReceipts - expVal)
+        const utilization = totalReceipts > 0 ? Math.min((row.totalExpenditure / totalReceipts) * 100, 100) : null
         return [
-          { name: row.category, label: "Expenditure", value: expVal, fill: solid, category: row.category },
-          { name: row.category, label: "Balance", value: balVal, fill: balanceFill, category: row.category },
+          { name: row.category, label: "Expenditure", value: expVal, fill: solid, category: row.category, utilization },
+          { name: row.category, label: "Balance", value: balVal, fill: balanceFill, category: row.category, utilization: null },
         ]
       }
 
@@ -2119,15 +2120,18 @@ export function Dashboard() {
                     stroke="none"
                     paddingAngle={outerPaddingAngle}
                     isAnimationActive={true}
-                    label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, payload }: { cx: number; cy: number; midAngle: number; innerRadius: number; outerRadius: number; percent: number; payload: { label?: string } }) => {
+                    label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, payload }: { cx: number; cy: number; midAngle: number; innerRadius: number; outerRadius: number; percent: number; payload: { label?: string; utilization?: number | null } }) => {
                       if (percent < 0.04 || payload?.label === "Balance") return null
                       const RADIAN = Math.PI / 180
                       const radius = innerRadius + (outerRadius - innerRadius) * 0.5
                       const x = cx + radius * Math.cos(-midAngle * RADIAN)
                       const y = cy + radius * Math.sin(-midAngle * RADIAN)
+                      const displayPct = expandedRows.size === 0 && payload?.utilization != null
+                        ? `${payload.utilization.toFixed(0)}%`
+                        : `${(percent * 100).toFixed(0)}%`
                       return (
                         <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={9} fontWeight={700}>
-                          {`${(percent * 100).toFixed(0)}%`}
+                          {displayPct}
                         </text>
                       )
                     }}
