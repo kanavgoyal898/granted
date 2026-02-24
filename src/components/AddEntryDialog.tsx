@@ -121,7 +121,7 @@ export function AddEntryDialog<T extends Record<string, FieldValue>>({
         <div className="grid gap-4 py-4">
           {fields.map(field => (
             <div key={field.key} className="flex flex-col sm:grid sm:grid-cols-4 sm:items-center gap-2 sm:gap-4">
-              <Label htmlFor={field.key} className="sm:text-right">
+              <Label htmlFor={field.key}>
                 {field.label}
               </Label>
               <div className="sm:col-span-3 min-w-0 overflow-hidden">
