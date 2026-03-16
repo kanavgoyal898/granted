@@ -72,6 +72,10 @@ type MockRouteHandler = (url: URL, init?: RequestInit) => unknown;
 
 const mockRoutes: [RegExp, MockRouteHandler][] = [
   [
+    /canView/,
+    () => ({ allowed: true }),
+  ],
+  [
     /canModify/,
     () => ({ allowed: true }),
   ],

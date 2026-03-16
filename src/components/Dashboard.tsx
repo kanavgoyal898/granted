@@ -22,7 +22,6 @@ type Scale = "absolute" | "thousands" | "lakhs" | "crores"
 type Tab = "summary" | "allocations" | "receipts" | "expenditures" | "reports"
 
 const BASE_URL = (import.meta.env?.VITE_BASE_URL as string | undefined) ?? "http://localhost:8000/"
-const ERP_LOGIN_URL = "https://nitj.ac.in"
 
 async function apiFetch(
   path: string,
@@ -36,11 +35,6 @@ async function apiFetch(
     },
     ...options,
   })
-
-  if (res.status === 401) {
-    window.location.href = ERP_LOGIN_URL
-    throw new Error("Unauthorized — redirecting to ERP login")
-  }
 
   return res
 }
