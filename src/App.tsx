@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Dashboard } from './components/Dashboard'
 import "@/lib/mock"
 
-const BASE_URL = (import.meta.env?.VITE_BASE_URL as string | undefined) ?? "http://localhost:8000/"
+const BASE_URL = (import.meta.env?.VITE_BASE_URL as string | undefined) ?? "http://localhost:8080/"
 
 async function apiFetch(
   path: string,
@@ -13,6 +13,7 @@ async function apiFetch(
   const res = await fetch(`${BASE_URL}${path}`, {
     credentials: "include",
     headers: {
+      "cache": "no-store",
       "Content-Type": "application/json",
       ...(options.headers || {}),
     },

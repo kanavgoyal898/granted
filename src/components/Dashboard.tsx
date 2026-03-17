@@ -16,7 +16,6 @@ import { Bar, BarChart, Cell, XAxis, PieChart, Pie, Customized, Tooltip as Recha
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { categories, subCategoriesMap, departments } from "@/models/data"
 import type { FieldValue } from "./EditDeleteDialog"
-import "@/lib/mock"
 
 type Scale = "absolute" | "thousands" | "lakhs" | "crores"
 type Tab = "summary" | "allocations" | "receipts" | "expenditures" | "reports"
@@ -30,6 +29,7 @@ async function apiFetch(
   const res = await fetch(`${BASE_URL}${path}`, {
     credentials: "include",
     headers: {
+      "cache": "no-store",
       "Content-Type": "application/json",
       ...(options.headers || {}),
     },
@@ -564,12 +564,11 @@ export function Dashboard() {
       allocationNumber: body.allocationNumber,
       categoryAmounts: body.categoryAmounts,
     }
-    const res = await fetch(`${BASE_URL}allocations/create.php`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-    if (res.ok) await fetchAllocations()
+    const res = await apiFetch("allocations/create.php", { method: "POST", body: JSON.stringify(payload) })
+    if (res.ok) {
+      await fetchAllocations()
+      window.alert("Data successfully registered.")
+    }
   }
 
   const handleAllocationSave = (id: number) => async (formData: AllocationFlat) => {
@@ -618,12 +617,11 @@ export function Dashboard() {
       amount: r.amount,
       attachment: attachmentUrl,
     }
-    const res = await fetch(`${BASE_URL}receipts/create.php`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-    if (res.ok) await fetchReceipts()
+    const res = await apiFetch("receipts/create.php", { method: "POST", body: JSON.stringify(payload) })
+    if (res.ok) {
+      await fetchReceipts()
+      window.alert("Data successfully registered.")
+    }
   }
 
   const handleReceiptSave = (id: number) => async (r: Receipt & { attachment?: string | File }) => {
@@ -634,12 +632,11 @@ export function Dashboard() {
       attachmentUrl = r.attachment ?? ""
     }
     const body = receiptToBody({ ...r, id, attachment: attachmentUrl })
-    const res = await fetch(`${BASE_URL}receipts/update.php`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    })
-    if (res.ok) await fetchReceipts()
+    const res = await apiFetch("receipts/update.php", { method: "POST", body: JSON.stringify(body) })
+    if (res.ok) {
+      await fetchReceipts()
+      window.alert("Data successfully registered.")
+    }
   }
 
   const handleReceiptDelete = (id: number) => async () => {
@@ -664,12 +661,11 @@ export function Dashboard() {
       amount: e.amount,
       attachment: attachmentUrl,
     }
-    const res = await fetch(`${BASE_URL}expenditures/create.php`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-    if (res.ok) await fetchExpenditures()
+    const res = await apiFetch("expenditures/create.php", { method: "POST", body: JSON.stringify(payload) })
+    if (res.ok) {
+      await fetchExpenditures()
+      window.alert("Data successfully registered.")
+    }
   }
 
   const handleExpenditureSave = (id: number) => async (e: Expenditure & { attachment?: string | File }) => {
@@ -680,12 +676,11 @@ export function Dashboard() {
       attachmentUrl = e.attachment ?? ""
     }
     const body = expenditureToBody({ ...e, id, attachment: attachmentUrl })
-    const res = await fetch(`${BASE_URL}expenditures/update.php`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    })
-    if (res.ok) await fetchExpenditures()
+    const res = await apiFetch("expenditures/update.php", { method: "POST", body: JSON.stringify(body) })
+    if (res.ok) {
+      await fetchExpenditures()
+      window.alert("Data successfully registered.")
+    }
   }
 
   const handleExpenditureDelete = (id: number) => async () => {
