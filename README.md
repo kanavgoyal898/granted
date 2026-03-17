@@ -1,73 +1,333 @@
-# React + TypeScript + Vite
+# Granted — Financial Management Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A production-ready web application for managing institutional finances, including allocations, receipts, expenditures, attachments, analytics, and reporting through a unified dashboard.
 
-Currently, two official plugins are available:
+The system is designed for departments, organizations, grant programs, or administrative offices that require structured financial tracking and data-driven insights.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Overview
 
-## React Compiler
+Granted provides a centralized interface to:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* Track budget allocations across categories
+* Record incoming funds (receipts)
+* Monitor expenditures with detailed metadata
+* Analyze spending patterns
+* Generate filtered reports
+* Export data to Excel
+* Manage supporting documents
+* Enforce permission-based access control
 
-## Expanding the ESLint configuration
+All financial modules are integrated into a single dashboard to provide a comprehensive view of financial activity.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Key Features
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Dashboard
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+* Real-time financial summary
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+* Receipts versus expenditure comparison
+
+* Category-wise analysis
+
+* Balance visualization
+
+* Expandable breakdown views
+
+* Multiple currency display scales:
+
+  * Absolute values
+  * Thousands
+  * Lakhs
+  * Crores
+
+* Responsive interactive charts
+
+### Allocations Module
+
+Manages budget allocations distributed across categories.
+
+Capabilities:
+
+* Create allocation records
+* Assign amounts to multiple categories
+* View allocation history
+* Edit or delete records (subject to permissions)
+* Filter by financial year or allocation number
+
+### Receipts Module
+
+Tracks incoming funds and supporting documentation.
+
+Supported fields:
+
+* Receipt date
+* Sanction order number
+* Category
+* Amount
+* Attachment
+
+Features:
+
+* Search and filtering
+* Pagination
+* Edit and delete operations
+* Attachment viewing
+
+### Expenditure Module
+
+Provides detailed tracking of outgoing funds.
+
+Supported fields:
+
+* Bill number
+* Voucher number
+* Category and sub-category
+* Department
+* Amount
+* Attachment
+
+Features:
+
+* Advanced filtering
+* Category-dependent sub-categories
+* Edit and delete functionality
+* Complete transaction history
+
+### Reports and Analytics
+
+Generates financial reports using flexible filters:
+
+* Date range
+* Financial year
+* Category or sub-category
+* Department
+
+Reports can be exported for external use.
+
+### Excel Export
+
+Data tables can be exported as `.xlsx` files for offline analysis, record keeping, or submission.
+
+### Permission-Based Access Control
+
+The interface adapts according to user privileges:
+
+* View-only access
+* Modification permissions
+* Restricted editing and deletion
+
+Permissions are retrieved dynamically from backend services.
+
+## Technology Stack
+
+### Frontend
+
+* React 19
+* TypeScript
+* Vite
+* Tailwind CSS 4
+* shadcn/ui
+* Radix UI
+* Recharts
+* React Router
+* Lucide Icons
+
+### Libraries and Utilities
+
+* SheetJS (xlsx) for Excel export
+* react-hook-form for form management
+* clsx and class-variance-authority for styling utilities
+
+## Project Structure
+
+```
+granted/
+│
+├── src/
+│   ├── components/
+│   │   ├── Dashboard.tsx
+│   │   ├── DataTable.tsx
+│   │   ├── AddEntryDialog.tsx
+│   │   ├── EditDeleteDialog.tsx
+│   │   └── ui/
+│   │
+│   ├── lib/
+│   │   ├── utils.ts
+│   │   └── mock.ts
+│   │
+│   ├── models/
+│   │   └── data.ts
+│   │
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── index.css
+│
+├── index.html
+├── vite.config.ts
+├── package.json
+└── README.md
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Backend Integration
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+This frontend requires a backend API (for example, PHP or Node.js) to handle data operations.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Expected API structure:
+
 ```
+permissions/
+  canView.php
+  canModify.php
+
+allocations/
+  create.php
+  read.php
+  update.php
+  delete.php
+
+receipts/
+  create.php
+  read.php
+  update.php
+  delete.php
+
+expenditures/
+  create.php
+  read.php
+  update.php
+  delete.php
+
+upload.php
+```
+
+## Environment Configuration
+
+Create a `.env` file in the project root:
+
+```
+VITE_BASE_URL=http://localhost:8000/
+```
+
+This variable specifies the base URL for backend API requests.
+
+## Getting Started
+
+### Prerequisites
+
+* Node.js version 18 or later
+* npm, pnpm, or yarn
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/kanavgoyal898/granted.git
+cd granted
+```
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Configure Environment
+
+Create the `.env` file as described above.
+
+### Start Development Server
+
+```bash
+npm run dev
+```
+
+The application will be available at:
+
+```
+http://localhost:5173
+```
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+Preview the production build:
+
+```bash
+npm run preview
+```
+
+## Financial Year Logic
+
+The application follows the Indian financial year cycle:
+
+April to March
+
+Example:
+
+```
+1 April 2024 – 31 March 2025 → FY 2024–2025
+```
+
+
+## File Attachment Support
+
+Supported file types include:
+
+* PDF documents
+* Image formats such as PNG and JPG
+
+Files are uploaded to the backend and stored externally.
+
+## Charts and Visualization
+
+The dashboard provides responsive visualizations for:
+
+* Category-wise expenditure
+* Receipts versus expenses
+* Budget utilization
+* Distribution analysis
+
+Charts automatically adjust to different screen sizes.
+
+## User Interface
+
+* Clean and modern design
+* Fully responsive layout
+* Accessible UI components
+* Mobile-friendly tables
+* Dark mode ready using CSS variables
+
+## Customization
+
+Application configuration can be modified in:
+
+```
+src/models/data.ts
+```
+
+Configurable elements include:
+
+* Categories
+* Sub-categories
+* Departments
+* Chart settings
+* Labels
+
+## Available Scripts
+
+| Command         | Description              |
+| --------------- | ------------------------ |
+| npm run dev     | Start development server |
+| npm run build   | Build production bundle  |
+| npm run preview | Preview production build |
+| npm run lint    | Run ESLint               |
+
+---
+
+## Security and Permissions
+
+* Sensitive operations handled by backend services
+* Permission checks enforced server-side
+* Client interface reflects authorization state
